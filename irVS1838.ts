@@ -1,4 +1,4 @@
-// MakerBit blocks supporting a Keyestudio Infrared Wireless Module Kit
+// IR reciever blocks supporting a IR reciever VS1838B HX1838 sensor
 // (receiver module+remote controller)
 
 const enum IrButton {
@@ -60,15 +60,16 @@ const enum IrProtocol {
   NEC = 1,
 }
 
-//% color=#0fbc11 icon="\u272a" block="MakerBit"
-//% category="MakerBit"
-namespace makerbit {
+// *************************************************** [CATEGORY] IR VS1838 ****************************************** //
+//% weight=95 color=#bb0033 icon="\uf09e" block="IR VS1838"
+//% category="IR VS1838"
+namespace irVS1838 {
   let irState: IrState;
 
-  const MICROBIT_MAKERBIT_IR_NEC = 777;
-  const MICROBIT_MAKERBIT_IR_DATAGRAM = 778;
-  const MICROBIT_MAKERBIT_IR_BUTTON_PRESSED_ID = 789;
-  const MICROBIT_MAKERBIT_IR_BUTTON_RELEASED_ID = 790;
+  const MICROBIT_IR_NEC = 777;
+  const MICROBIT_IR_DATAGRAM = 778;
+  const MICROBIT_IR_BUTTON_PRESSED_ID = 789;
+  const MICROBIT_IR_BUTTON_RELEASED_ID = 790;
   const IR_REPEAT = 256;
   const IR_INCOMPLETE = 257;
   const IR_DATAGRAM = 258;
@@ -149,7 +150,7 @@ namespace makerbit {
       const status = decode(mark + space);
 
       if (status !== IR_INCOMPLETE) {
-        control.raiseEvent(MICROBIT_MAKERBIT_IR_NEC, status);
+        control.raiseEvent(MICROBIT_IR_NEC, status);
       }
     });
   }
@@ -160,7 +161,7 @@ namespace makerbit {
    * @param protocol IR protocol, eg: IrProtocol.Keyestudio
    */
   //% subcategory="IR Receiver"
-  //% blockId="makerbit_infrared_connect_receiver"
+  //% blockId="infrared_connect_receiver"
   //% block="connect IR receiver at pin %pin and decode %protocol"
   //% pin.fieldEditor="gridpicker"
   //% pin.fieldOptions.columns=4
@@ -191,7 +192,7 @@ namespace makerbit {
     const REPEAT_TIMEOUT_MS = 120;
 
     control.onEvent(
-      MICROBIT_MAKERBIT_IR_NEC,
+      MICROBIT_IR_NEC,
       EventBusValue.MICROBIT_EVT_ANY,
       () => {
         const irEvent = control.eventValue();
@@ -203,7 +204,7 @@ namespace makerbit {
 
         if (irEvent === IR_DATAGRAM) {
           irState.hasNewDatagram = true;
-          control.raiseEvent(MICROBIT_MAKERBIT_IR_DATAGRAM, 0);
+          control.raiseEvent(MICROBIT_IR_DATAGRAM, 0);
 
           const newCommand = irState.commandSectionBits >> 8;
 
@@ -211,14 +212,14 @@ namespace makerbit {
           if (newCommand !== activeCommand) {
             if (activeCommand >= 0) {
               control.raiseEvent(
-                MICROBIT_MAKERBIT_IR_BUTTON_RELEASED_ID,
+                MICROBIT_IR_BUTTON_RELEASED_ID,
                 activeCommand
               );
             }
 
             activeCommand = newCommand;
             control.raiseEvent(
-              MICROBIT_MAKERBIT_IR_BUTTON_PRESSED_ID,
+              MICROBIT_IR_BUTTON_PRESSED_ID,
               newCommand
             );
           }
@@ -236,7 +237,7 @@ namespace makerbit {
           if (now > repeatTimeout) {
             // repeat timed out
             control.raiseEvent(
-              MICROBIT_MAKERBIT_IR_BUTTON_RELEASED_ID,
+              MICROBIT_IR_BUTTON_RELEASED_ID,
               activeCommand
             );
             activeCommand = -1;
@@ -255,7 +256,7 @@ namespace makerbit {
    * @param handler body code to run when the event is raised
    */
   //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_on_ir_button
+  //% blockId=infrared_on_ir_button
   //% block="on IR button | %button | %action"
   //% button.fieldEditor="gridpicker"
   //% button.fieldOptions.columns=3
@@ -268,8 +269,8 @@ namespace makerbit {
   ) {
     control.onEvent(
       action === IrButtonAction.Pressed
-        ? MICROBIT_MAKERBIT_IR_BUTTON_PRESSED_ID
-        : MICROBIT_MAKERBIT_IR_BUTTON_RELEASED_ID,
+        ? MICROBIT_IR_BUTTON_PRESSED_ID
+        : MICROBIT_IR_BUTTON_RELEASED_ID,
       button === IrButton.Any ? EventBusValue.MICROBIT_EVT_ANY : button,
       () => {
         handler();
@@ -281,7 +282,7 @@ namespace makerbit {
    * Returns the code of the IR button that was pressed last. Returns -1 (IrButton.Any) if no button has been pressed yet.
    */
   //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_ir_button_pressed
+  //% blockId=infrared_ir_button_pressed
   //% block="IR button"
   //% weight=70
   export function irButton(): number {
@@ -296,12 +297,12 @@ namespace makerbit {
    * @param handler body code to run when the event is raised
    */
   //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_on_ir_datagram
+  //% blockId=infrared_on_ir_datagram
   //% block="on IR datagram received"
   //% weight=40
   export function onIrDatagram(handler: () => void) {
     control.onEvent(
-      MICROBIT_MAKERBIT_IR_DATAGRAM,
+      MICROBIT_IR_DATAGRAM,
       EventBusValue.MICROBIT_EVT_ANY,
       () => {
         handler();
@@ -314,7 +315,7 @@ namespace makerbit {
    * The last received datagram is returned or "0x00000000" if no data has been received yet.
    */
   //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_ir_datagram
+  //% blockId=infrared_ir_datagram
   //% block="IR datagram"
   //% weight=30
   export function irDatagram(): string {
@@ -332,7 +333,7 @@ namespace makerbit {
    * Returns true if any IR data was received since the last call of this function. False otherwise.
    */
   //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_was_any_ir_datagram_received
+  //% blockId=infrared_was_any_ir_datagram_received
   //% block="IR data was received"
   //% weight=80
   export function wasIrDataReceived(): boolean {
@@ -352,7 +353,7 @@ namespace makerbit {
    * @param button the button
    */
   //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_button_code
+  //% blockId=infrared_button_code
   //% button.fieldEditor="gridpicker"
   //% button.fieldOptions.columns=3
   //% button.fieldOptions.tooltips="false"
