@@ -9,10 +9,15 @@
     "files": [
         "README.md",
         "infrared-receiver.ts",
-        "_locales/de/MakerBit-IR-Receiver-strings.json"
+        "_locales/de/MakerBit-IR-Receiver-strings.json",
+        "irVS1838.ts"
     ],
     "testFiles": [
         "test.ts"
     ],
-    "public": true
+    "public": true,
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "tsprj"
 }
