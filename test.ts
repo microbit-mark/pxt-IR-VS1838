@@ -2,7 +2,7 @@
  * IR tests
  */
 
-irVS1838.connectIrReceiver(DigitalPin.P0, IrProtocol.NEC);
+irVS1838.connectIrReceiver(DigitalPin.P0);
 irVS1838.onIrButton(IrButton.Ok, IrButtonAction.Pressed, () => {});
 irVS1838.onIrButton(IrButton.Up, IrButtonAction.Released, () => {});
 irVS1838.onIrDatagram(() => {});

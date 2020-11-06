@@ -1,5 +1,4 @@
-// IR reciever blocks supporting a IR reciever VS1838B HX1838 sensor
-// (receiver module+remote controller)
+// Blocks supporting any IR reciever VS1838B HX1838 sensor
 
 const enum IrButton {
   //% block="any"
@@ -60,10 +59,11 @@ const enum IrProtocol {
   NEC = 1,
 }
 
-// *************************************************** [CATEGORY] IR VS1838 ****************************************** //
+// *************************************************** [NAMESPACE] IR VS1838 ****************************************** //
 //% weight=95 color=#bb0033 icon="\uf09e" block="IR VS1838"
 //% category="IR VS1838"
 namespace irVS1838 {
+  // * * * * * * * * * * * * * * * * * * * * * * * * * * declarations * * * * * * * * * ** * * * * * * * * * * * //
   let irState: IrState;
 
   const MICROBIT_IR_NEC = 777;
@@ -75,7 +75,6 @@ namespace irVS1838 {
   const IR_DATAGRAM = 258;
 
   interface IrState {
-    protocol: IrProtocol;
     hasNewDatagram: boolean;
     bitsReceived: uint8;
     addressSectionBits: uint16;
@@ -84,18 +83,12 @@ namespace irVS1838 {
     loword: uint16;
   }
 
+  // * * * * * * * * * * * * * * * * * * * * * * * * * * functions * * * * * * * * * ** * * * * * * * * * * * //
   function appendBitToDatagram(bit: number): number {
     irState.bitsReceived += 1;
 
     if (irState.bitsReceived <= 8) {
-      irState.hiword = (irState.hiword << 1) + bit;
-      if (irState.protocol === IrProtocol.Keyestudio && bit === 1) {
-        // recover from missing message bits at the beginning
-        // Keyestudio address is 0 and thus missing bits can be detected
-        // by checking for the first inverse address bit (which is a 1)
-        irState.bitsReceived = 9;
-        irState.hiword = 1;
-      }
+      irState.hiword = (irState.hiword << 1) + bit;      
     } else if (irState.bitsReceived <= 16) {
       irState.hiword = (irState.hiword << 1) + bit;
     } else if (irState.bitsReceived <= 32) {
@@ -155,28 +148,25 @@ namespace irVS1838 {
     });
   }
 
+  // *************************************************** namespace's main blocks ****************************************** //
   /**
-   * Connects to the IR receiver module at the specified pin and configures the IR protocol.
+   * Connects to the IR receiver module at the specified pin.
    * @param pin IR receiver pin, eg: DigitalPin.P0
-   * @param protocol IR protocol, eg: IrProtocol.Keyestudio
    */
-  //% subcategory="IR Receiver"
   //% blockId="infrared_connect_receiver"
-  //% block="connect IR receiver at pin %pin and decode %protocol"
+  //% block="connect IR receiver at pin %pin"
   //% pin.fieldEditor="gridpicker"
   //% pin.fieldOptions.columns=4
-  //% pin.fieldOptions.tooltips="false"
+  //% pin.fieldOptions.tooltips=0
   //% weight=90
   export function connectIrReceiver(
     pin: DigitalPin,
-    protocol: IrProtocol
   ): void {
     if (irState) {
       return;
     }
 
     irState = {
-      protocol: protocol,
       bitsReceived: 0,
       hasNewDatagram: false,
       addressSectionBits: 0,
@@ -248,20 +238,78 @@ namespace irVS1838 {
       }
     });
   }
+ 
+  // *************************************************** [GROUP] Datagram ****************************************** //
+  /**
+   * Do something when an IR datagram is received.
+   * @param handler body code to run when the event is raised
+   */
+  //% blockId=infrared_on_ir_datagram
+  //% block="on IR datagram received"
+  //% group="Datagram"
+  //% weight=100
+  export function onIrDatagram(handler: () => void) {
+    control.onEvent(
+      MICROBIT_IR_DATAGRAM,
+      EventBusValue.MICROBIT_EVT_ANY,
+      () => {
+        handler();
+      }
+    );
+  }
 
+  /**
+   * Returns the IR datagram as 32-bit hexadecimal string.
+   * The last received datagram is returned or "0x00000000" if no data has been received yet.
+   */
+  //% blockId=infrared_ir_datagram
+  //% block="IR datagram"
+  //% group="Datagram"
+  //% weight=30
+  export function irDatagram(): string {
+    if (!irState) {
+      return "0x00000000";
+    }
+    return (
+      "0x" +
+      ir_rec_to16BitHex(irState.addressSectionBits) +
+      ir_rec_to16BitHex(irState.commandSectionBits)
+    );
+  }
+
+  /**
+   * Returns true if any IR data was received since the last call of this function. False otherwise.
+   */
+  //% blockId=infrared_was_any_ir_datagram_received
+  //% block="IR data was received"
+  //% group="Datagram"
+  //% weight=90
+  export function wasIrDataReceived(): boolean {
+    if (!irState) {
+      return false;
+    }
+    if (irState.hasNewDatagram) {
+      irState.hasNewDatagram = false;
+      return true;
+    } else {
+      return false;
+    }
+  }
+    
+  // *************************************************** [SUBCATEGORY] Controller ****************************************** //
   /**
    * Do something when a specific button is pressed or released on the remote control.
    * @param button the button to be checked
    * @param action the trigger action
    * @param handler body code to run when the event is raised
    */
-  //% subcategory="IR Receiver"
+  //% subcategory="Controller"
   //% blockId=infrared_on_ir_button
   //% block="on IR button | %button | %action"
   //% button.fieldEditor="gridpicker"
   //% button.fieldOptions.columns=3
   //% button.fieldOptions.tooltips="false"
-  //% weight=50
+  //% weight=100
   export function onIrButton(
     button: IrButton,
     action: IrButtonAction,
@@ -281,10 +329,10 @@ namespace irVS1838 {
   /**
    * Returns the code of the IR button that was pressed last. Returns -1 (IrButton.Any) if no button has been pressed yet.
    */
-  //% subcategory="IR Receiver"
+  //% subcategory="Controller"
   //% blockId=infrared_ir_button_pressed
   //% block="IR button"
-  //% weight=70
+  //% weight=50
   export function irButton(): number {
     if (!irState) {
       return IrButton.Any;
@@ -293,72 +341,16 @@ namespace irVS1838 {
   }
 
   /**
-   * Do something when an IR datagram is received.
-   * @param handler body code to run when the event is raised
-   */
-  //% subcategory="IR Receiver"
-  //% blockId=infrared_on_ir_datagram
-  //% block="on IR datagram received"
-  //% weight=40
-  export function onIrDatagram(handler: () => void) {
-    control.onEvent(
-      MICROBIT_IR_DATAGRAM,
-      EventBusValue.MICROBIT_EVT_ANY,
-      () => {
-        handler();
-      }
-    );
-  }
-
-  /**
-   * Returns the IR datagram as 32-bit hexadecimal string.
-   * The last received datagram is returned or "0x00000000" if no data has been received yet.
-   */
-  //% subcategory="IR Receiver"
-  //% blockId=infrared_ir_datagram
-  //% block="IR datagram"
-  //% weight=30
-  export function irDatagram(): string {
-    if (!irState) {
-      return "0x00000000";
-    }
-    return (
-      "0x" +
-      ir_rec_to16BitHex(irState.addressSectionBits) +
-      ir_rec_to16BitHex(irState.commandSectionBits)
-    );
-  }
-
-  /**
-   * Returns true if any IR data was received since the last call of this function. False otherwise.
-   */
-  //% subcategory="IR Receiver"
-  //% blockId=infrared_was_any_ir_datagram_received
-  //% block="IR data was received"
-  //% weight=80
-  export function wasIrDataReceived(): boolean {
-    if (!irState) {
-      return false;
-    }
-    if (irState.hasNewDatagram) {
-      irState.hasNewDatagram = false;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  /**
    * Returns the command code of a specific IR button.
    * @param button the button
    */
-  //% subcategory="IR Receiver"
+  //% subcategory="Controller"
   //% blockId=infrared_button_code
   //% button.fieldEditor="gridpicker"
   //% button.fieldOptions.columns=3
   //% button.fieldOptions.tooltips="false"
   //% block="IR button code %button"
-  //% weight=60
+  //% weight=40
   export function irButtonCode(button: IrButton): number {
     return button as number;
   }
