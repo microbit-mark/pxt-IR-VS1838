@@ -1,11 +1,11 @@
+# IR Receiver VS1838B HX1838
+![Build status badge](https://github.com/BrickHackers/pxt-IR-VS1838/workflows/MakeCode/badge.svg)
+based on [MakerBit IR Receiver](https://github.com/1010Technologies/pxt-makerbit-ir-receiver) by [1010Technologies](https://github.com/1010Technologies)
 
-[![Build Status](https://travis-ci.org/1010Technologies/pxt-makerbit-ir-receiver.svg?branch=master)](https://travis-ci.org/1010Technologies/pxt-makerbit-ir-receiver)
+MakeCode extension for 
 
-MakeCode extension for Keyestudio Infrared Wireless Module Kit. The extension should also work with other with IR receivers and NEC compatible IR remotes.
+## IR Receiver & Controller
 
-## MakerBit Board
-
-The MakerBit connects to the BBC micro:bit to provide easy connections to a wide variety of sensors, actuators and other components.
 Lorem Ipsum.
 
 http://makerbit.com/
