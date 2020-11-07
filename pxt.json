@@ -8,7 +8,8 @@
     },
     "files": [
         "README.md",
-        "_locales/de/MakerBit-IR-Receiver-strings.json",
+        "_locales/cs/IR-VS8138-strings.json",
+		"_locales/de/IR-VS8138-strings.json",
         "irVS1838.ts",
         "irControllerDefinition.ts"
     ],
