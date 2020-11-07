@@ -8,9 +8,9 @@
     },
     "files": [
         "README.md",
-        "infrared-receiver.ts",
         "_locales/de/MakerBit-IR-Receiver-strings.json",
-        "irVS1838.ts"
+        "irVS1838.ts",
+        "irControllerDefinition.ts"
     ],
     "testFiles": [
         "test.ts"

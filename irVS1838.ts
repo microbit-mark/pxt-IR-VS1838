@@ -1,50 +1,5 @@
-// MakerBit blocks supporting a Keyestudio Infrared Wireless Module Kit
-// (receiver module+remote controller)
-
-const enum IrButton {
-  //% block="any"
-  Any = -1,
-  //% block="▲"
-  Up = 0x62,
-  //% block=" "
-  Unused_2 = -2,
-  //% block="◀"
-  Left = 0x22,
-  //% block="OK"
-  Ok = 0x02,
-  //% block="▶"
-  Right = 0xc2,
-  //% block=" "
-  Unused_3 = -3,
-  //% block="▼"
-  Down = 0xa8,
-  //% block=" "
-  Unused_4 = -4,
-  //% block="1"
-  Number_1 = 0x68,
-  //% block="2"
-  Number_2 = 0x98,
-  //% block="3"
-  Number_3 = 0xb0,
-  //% block="4"
-  Number_4 = 0x30,
-  //% block="5"
-  Number_5 = 0x18,
-  //% block="6"
-  Number_6 = 0x7a,
-  //% block="7"
-  Number_7 = 0x10,
-  //% block="8"
-  Number_8 = 0x38,
-  //% block="9"
-  Number_9 = 0x5a,
-  //% block="*"
-  Star = 0x42,
-  //% block="0"
-  Number_0 = 0x4a,
-  //% block="#"
-  Hash = 0x52,
-}
+// Blocks supporting any IR reciever VS1838B HX1838 sensor
+// including subcategory for IR Controller blocks
 
 const enum IrButtonAction {
   //% block="pressed"
@@ -53,28 +8,22 @@ const enum IrButtonAction {
   Released = 1,
 }
 
-const enum IrProtocol {
-  //% block="Keyestudio"
-  Keyestudio = 0,
-  //% block="NEC"
-  NEC = 1,
-}
-
-//% color=#0fbc11 icon="\u272a" block="MakerBit"
-//% category="MakerBit"
-namespace makerbit {
+// *************************************************** [NAMESPACE] IR VS1838 ****************************************** //
+//% weight=95 color=#bb0033 icon="\uf09e" block="IR VS1838"
+//% category="IR VS1838"
+namespace irVS1838 {
+  // * * * * * * * * * * * * * * * * * * * * * * * * * * declarations * * * * * * * * * ** * * * * * * * * * * * //
   let irState: IrState;
 
-  const MICROBIT_MAKERBIT_IR_NEC = 777;
-  const MICROBIT_MAKERBIT_IR_DATAGRAM = 778;
-  const MICROBIT_MAKERBIT_IR_BUTTON_PRESSED_ID = 789;
-  const MICROBIT_MAKERBIT_IR_BUTTON_RELEASED_ID = 790;
+  const MICROBIT_IR_NEC = 777;
+  const MICROBIT_IR_DATAGRAM = 778;
+  const MICROBIT_IR_BUTTON_PRESSED_ID = 789;
+  const MICROBIT_IR_BUTTON_RELEASED_ID = 790;
   const IR_REPEAT = 256;
   const IR_INCOMPLETE = 257;
   const IR_DATAGRAM = 258;
 
   interface IrState {
-    protocol: IrProtocol;
     hasNewDatagram: boolean;
     bitsReceived: uint8;
     addressSectionBits: uint16;
@@ -83,18 +32,12 @@ namespace makerbit {
     loword: uint16;
   }
 
+  // * * * * * * * * * * * * * * * * * * * * * * * * * * functions * * * * * * * * * ** * * * * * * * * * * * //
   function appendBitToDatagram(bit: number): number {
     irState.bitsReceived += 1;
 
     if (irState.bitsReceived <= 8) {
-      irState.hiword = (irState.hiword << 1) + bit;
-      if (irState.protocol === IrProtocol.Keyestudio && bit === 1) {
-        // recover from missing message bits at the beginning
-        // Keyestudio address is 0 and thus missing bits can be detected
-        // by checking for the first inverse address bit (which is a 1)
-        irState.bitsReceived = 9;
-        irState.hiword = 1;
-      }
+      irState.hiword = (irState.hiword << 1) + bit;      
     } else if (irState.bitsReceived <= 16) {
       irState.hiword = (irState.hiword << 1) + bit;
     } else if (irState.bitsReceived <= 32) {
@@ -149,33 +92,30 @@ namespace makerbit {
       const status = decode(mark + space);
 
       if (status !== IR_INCOMPLETE) {
-        control.raiseEvent(MICROBIT_MAKERBIT_IR_NEC, status);
+        control.raiseEvent(MICROBIT_IR_NEC, status);
       }
     });
   }
 
+  // *************************************************** namespace's main blocks ****************************************** //
   /**
-   * Connects to the IR receiver module at the specified pin and configures the IR protocol.
+   * Connects to the IR receiver module at the specified pin.
    * @param pin IR receiver pin, eg: DigitalPin.P0
-   * @param protocol IR protocol, eg: IrProtocol.Keyestudio
    */
-  //% subcategory="IR Receiver"
-  //% blockId="makerbit_infrared_connect_receiver"
-  //% block="connect IR receiver at pin %pin and decode %protocol"
+  //% blockId="infrared_connect_receiver"
+  //% block="connect IR receiver at pin %pin"
   //% pin.fieldEditor="gridpicker"
   //% pin.fieldOptions.columns=4
-  //% pin.fieldOptions.tooltips="false"
+  //% pin.fieldOptions.tooltips=0
   //% weight=90
   export function connectIrReceiver(
     pin: DigitalPin,
-    protocol: IrProtocol
   ): void {
     if (irState) {
       return;
     }
 
     irState = {
-      protocol: protocol,
       bitsReceived: 0,
       hasNewDatagram: false,
       addressSectionBits: 0,
@@ -191,7 +131,7 @@ namespace makerbit {
     const REPEAT_TIMEOUT_MS = 120;
 
     control.onEvent(
-      MICROBIT_MAKERBIT_IR_NEC,
+      MICROBIT_IR_NEC,
       EventBusValue.MICROBIT_EVT_ANY,
       () => {
         const irEvent = control.eventValue();
@@ -203,7 +143,7 @@ namespace makerbit {
 
         if (irEvent === IR_DATAGRAM) {
           irState.hasNewDatagram = true;
-          control.raiseEvent(MICROBIT_MAKERBIT_IR_DATAGRAM, 0);
+          control.raiseEvent(MICROBIT_IR_DATAGRAM, 0);
 
           const newCommand = irState.commandSectionBits >> 8;
 
@@ -211,14 +151,14 @@ namespace makerbit {
           if (newCommand !== activeCommand) {
             if (activeCommand >= 0) {
               control.raiseEvent(
-                MICROBIT_MAKERBIT_IR_BUTTON_RELEASED_ID,
+                MICROBIT_IR_BUTTON_RELEASED_ID,
                 activeCommand
               );
             }
 
             activeCommand = newCommand;
             control.raiseEvent(
-              MICROBIT_MAKERBIT_IR_BUTTON_PRESSED_ID,
+              MICROBIT_IR_BUTTON_PRESSED_ID,
               newCommand
             );
           }
@@ -236,7 +176,7 @@ namespace makerbit {
           if (now > repeatTimeout) {
             // repeat timed out
             control.raiseEvent(
-              MICROBIT_MAKERBIT_IR_BUTTON_RELEASED_ID,
+              MICROBIT_IR_BUTTON_RELEASED_ID,
               activeCommand
             );
             activeCommand = -1;
@@ -247,61 +187,19 @@ namespace makerbit {
       }
     });
   }
-
-  /**
-   * Do something when a specific button is pressed or released on the remote control.
-   * @param button the button to be checked
-   * @param action the trigger action
-   * @param handler body code to run when the event is raised
-   */
-  //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_on_ir_button
-  //% block="on IR button | %button | %action"
-  //% button.fieldEditor="gridpicker"
-  //% button.fieldOptions.columns=3
-  //% button.fieldOptions.tooltips="false"
-  //% weight=50
-  export function onIrButton(
-    button: IrButton,
-    action: IrButtonAction,
-    handler: () => void
-  ) {
-    control.onEvent(
-      action === IrButtonAction.Pressed
-        ? MICROBIT_MAKERBIT_IR_BUTTON_PRESSED_ID
-        : MICROBIT_MAKERBIT_IR_BUTTON_RELEASED_ID,
-      button === IrButton.Any ? EventBusValue.MICROBIT_EVT_ANY : button,
-      () => {
-        handler();
-      }
-    );
-  }
-
-  /**
-   * Returns the code of the IR button that was pressed last. Returns -1 (IrButton.Any) if no button has been pressed yet.
-   */
-  //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_ir_button_pressed
-  //% block="IR button"
-  //% weight=70
-  export function irButton(): number {
-    if (!irState) {
-      return IrButton.Any;
-    }
-    return irState.commandSectionBits >> 8;
-  }
-
+ 
+  // *************************************************** [GROUP] Datagram ****************************************** //
   /**
    * Do something when an IR datagram is received.
    * @param handler body code to run when the event is raised
    */
-  //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_on_ir_datagram
+  //% blockId=infrared_on_ir_datagram
   //% block="on IR datagram received"
-  //% weight=40
+  //% group="Datagram"
+  //% weight=100
   export function onIrDatagram(handler: () => void) {
     control.onEvent(
-      MICROBIT_MAKERBIT_IR_DATAGRAM,
+      MICROBIT_IR_DATAGRAM,
       EventBusValue.MICROBIT_EVT_ANY,
       () => {
         handler();
@@ -313,9 +211,9 @@ namespace makerbit {
    * Returns the IR datagram as 32-bit hexadecimal string.
    * The last received datagram is returned or "0x00000000" if no data has been received yet.
    */
-  //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_ir_datagram
+  //% blockId=infrared_ir_datagram
   //% block="IR datagram"
+  //% group="Datagram"
   //% weight=30
   export function irDatagram(): string {
     if (!irState) {
@@ -331,10 +229,10 @@ namespace makerbit {
   /**
    * Returns true if any IR data was received since the last call of this function. False otherwise.
    */
-  //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_was_any_ir_datagram_received
+  //% blockId=infrared_was_any_ir_datagram_received
   //% block="IR data was received"
-  //% weight=80
+  //% group="Datagram"
+  //% weight=90
   export function wasIrDataReceived(): boolean {
     if (!irState) {
       return false;
@@ -346,18 +244,62 @@ namespace makerbit {
       return false;
     }
   }
+    
+  // *************************************************** [SUBCATEGORY] Controller ****************************************** //
+  /**
+   * Do something when a specific button is pressed or released on the remote control.
+   * @param button the button to be checked
+   * @param action the trigger action
+   * @param handler body code to run when the event is raised
+   */
+  //% subcategory="Controller"
+  //% blockId=infrared_on_ir_button
+  //% block="on IR button | %button | %action"
+  //% button.fieldEditor="gridpicker"
+  //% button.fieldOptions.columns=3
+  //% button.fieldOptions.tooltips="false"
+  //% weight=100
+  export function onIrButton(
+    button: IrButton,
+    action: IrButtonAction,
+    handler: () => void
+  ) {
+    control.onEvent(
+      action === IrButtonAction.Pressed
+        ? MICROBIT_IR_BUTTON_PRESSED_ID
+        : MICROBIT_IR_BUTTON_RELEASED_ID,
+      button === IrButton.Any ? EventBusValue.MICROBIT_EVT_ANY : button,
+      () => {
+        handler();
+      }
+    );
+  }
+
+  /**
+   * Returns the code of the IR button that was pressed last. Returns -1 (IrButton.Any) if no button has been pressed yet.
+   */
+  //% subcategory="Controller"
+  //% blockId=infrared_ir_button_pressed
+  //% block="IR button"
+  //% weight=50
+  export function irButton(): number {
+    if (!irState) {
+      return IrButton.Any;
+    }
+    return irState.commandSectionBits >> 8;
+  }
 
   /**
    * Returns the command code of a specific IR button.
    * @param button the button
    */
-  //% subcategory="IR Receiver"
-  //% blockId=makerbit_infrared_button_code
+  //% subcategory="Controller"
+  //% blockId=infrared_button_code
   //% button.fieldEditor="gridpicker"
   //% button.fieldOptions.columns=3
   //% button.fieldOptions.tooltips="false"
   //% block="IR button code %button"
-  //% weight=60
+  //% weight=40
   export function irButtonCode(button: IrButton): number {
     return button as number;
   }
