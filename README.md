@@ -1,18 +1,32 @@
-# IR Receiver VS1838B HX1838
+# IR Remote Receiver Module and Controller Kit
 ![Build status badge](https://github.com/BrickHackers/pxt-IR-VS1838/workflows/MakeCode/badge.svg)
 based on [MakerBit IR Receiver](https://github.com/1010Technologies/pxt-makerbit-ir-receiver) by [1010Technologies](https://github.com/1010Technologies)
 
-MakeCode extension for 
+MakeCode extension for set of IR receiver VS1838B HX1838 and Mini Slim controller (product name can vary depending on the seller - see pictures bellow).
+Kit usually includes 5mm IR LED for construction of your own transmiter.
 
-## IR Receiver & Controller
+## IR Receiver VS1838B HX1838
 
-Lorem Ipsum.
+| ![IR Receiver VS1838B HX1838](https://github.com/BrickHackers/pxt-IR-VS1838/raw/master/irReceiverUnsoldered.png "IR receiver (unsoldered version)") | ![IR Receiver VS1838B HX1838](https://github.com/BrickHackers/pxt-IR-VS1838/raw/master/irReceiverSoldered.png "IR receiver (soldered version)") |
+| :-------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: | 
+|                                                        _unsoldered components_                                                                      |                                                                    _soldered board_                                                             |
+IR receiver chip is focused to use with Arduino and Raspberry Pi, however, works with micor:bit and calliope too.
+According to VS1838B datasheet, it features:
+* **[ frequency ]**  38 kHz
+* **[ working voltage ]**  2.7 – 5.5 V DC
+* **[ Receiver Distance ]** 22 – 25 m
+* **[ Size ]** 7.4 mm x 6.2 mm x 5.3 mm
 
-http://makerbit.com/
 
-| ![MakerBit](https://github.com/1010Technologies/pxt-makerbit/raw/master/MakerBit.png "MakerBit") | ![MakerBit+R](https://github.com/1010Technologies/pxt-makerbit/raw/master/MakerBit+R.png "MakerBit+R") |
-| :----------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------: |
-|                                            _MakerBit_                                            |                                   _MakerBit+R with motor controller_                                   |
+| ![IR Controller](https://github.com/BrickHackers/pxt-IR-VS1838/raw/master/irCotnroller.png "IR controller") |
+| :---------------------------------------------------------------------------------------------------------: |
+| _Mini Slim infrared remote controller_                                                                      |
+
+Some sellers could print their logo on controller, but functionality should be same. 
+* **[ buttons ]** 17 function keys; the effective life of 20,000 pressings
+* **[ frequency ]** 38 kHz
+* **[ effective angle ]** 60°
+* **[ transmission distance ]** cca 8 m (specific and surroundings, the receiver sensitivity and other factors)
 
 # Documentation
 > Open this page at [https://github.com/BrickHackers/pxt-IR-VS1838](https://github.com/BrickHackers/pxt-IR-VS1838)
@@ -104,11 +118,11 @@ irVS1838.irButtonCode(IrButton.Num9)
 ```blocks
 irVS1838.connectIrReceiver(DigitalPin.P0,)
 
-irVS1838.onIrButton(IrButton.Ok, IrButtonAction.Released, function () {
+irVS1838.onIrButton(IrButton.OK, IrButtonAction.Released, function () {
     basic.showIcon(IconNames.SmallHeart)
 })
 
-irVS1838.onIrButton(IrButton.Ok, IrButtonAction.Pressed, function () {
+irVS1838.onIrButton(IrButton.OK, IrButtonAction.Pressed, function () {
     basic.showIcon(IconNames.Heart)
 })
 
