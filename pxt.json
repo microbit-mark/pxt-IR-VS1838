@@ -1,6 +1,6 @@
 {
     "name": "IR Remote Receiver and Controller Kit",
-    "version": "0.9",
+    "version": "0.9-alpha",
     "description": "MakeCode extension for IR receiver VS1838B HX1838 and Mini Slim controller",
     "license": "MIT",
     "dependencies": {
@@ -8,7 +8,8 @@
     },
     "files": [
         "README.md",
-        "_locales/cs/IR-VS8138-strings.json",
+        "_locales/IR-VS8138-strings.json",
+		"_locales/cs/IR-VS8138-strings.json",
 		"_locales/de/IR-VS8138-strings.json",
         "irVS1838.ts",
         "irControllerDefinition.ts"
