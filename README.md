@@ -116,20 +116,21 @@ irVS1838.irButtonCode(IrButton.Num9)
 ## MakeCode Example
 
 ```blocks
-irVS1838.connectIrReceiver(DigitalPin.P0,)
 
-irVS1838.onIrButton(IrButton.OK, IrButtonAction.Released, function () {
-    basic.showIcon(IconNames.SmallHeart)
+irVS1838.connectIrReceiver(DigitalPin.P0)
+
+basic.forever(function () {
+    if (irVS1838.wasAnyIrButtonPressed()) {
+        basic.showNumber(irVS1838.irButton())
+    }
 })
 
 irVS1838.onIrButton(IrButton.OK, IrButtonAction.Pressed, function () {
     basic.showIcon(IconNames.Heart)
 })
 
-basic.forever(function () {
-    if (irVS1838.wasAnyIrButtonPressed()) {
-        basic.showNumber(irVS1838.irButton())
-    }
+irVS1838.onIrButton(IrButton.OK, IrButtonAction.Released, function () {
+    basic.showIcon(IconNames.SmallHeart)
 })
 
 ```
