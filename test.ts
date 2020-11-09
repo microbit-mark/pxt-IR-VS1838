@@ -3,6 +3,7 @@
  */
 
 irVS1838.connectIrReceiver(DigitalPin.P0);
+irVS1838.connectIrReceiverVisual(DigitalPin.P0);
 irVS1838.onIrButton(IrButton.OK, IrButtonAction.Pressed, () => {});
 irVS1838.onIrButton(IrButton.Up, IrButtonAction.Released, () => {});
 irVS1838.onIrDatagram(() => {});
