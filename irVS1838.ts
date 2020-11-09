@@ -187,6 +187,95 @@ namespace irVS1838 {
       }
     });
   }
+
+  /**
+   * Connects to the IR receiver module at the specified pin. Display it on LED matrix.
+   * @param pin IR receiver pin, eg: DigitalPin.P0
+   */
+  //% blockId="infrared_connect_and_display_receiver"
+  //% block="connect and display IR receiver at pin %pin"
+  //% pin.fieldEditor="gridpicker"
+  //% pin.fieldOptions.columns=4
+  //% pin.fieldOptions.tooltips=0
+  //% weight=89
+  export function connectIrReceiverVisual(
+    pin: DigitalPin,
+  ): void {
+    irVS1838.connectIrReceiver(pin)
+    irVS1838.connectIrReceiver(DigitalPin.P0)
+    basic.showLeds(`
+        . . . . .
+        . . . . .
+        . . . . .
+        . . . . .
+        # . . . .
+        `)
+    basic.showLeds(`
+        . . . . .
+        . . . . .
+        . . . . .
+        # # . . .
+        # # . . .
+        `)
+    basic.showLeds(`
+        . . . . .
+        . . . . .
+        # # . . .
+        . . # . .
+        # . # . .
+        `)
+    basic.showLeds(`
+        . . . . .
+        # # # . .
+        # # # # .
+        . . # # .
+        # . # # .
+        `)
+    basic.showLeds(`
+        # # # . .
+        . . . # .
+        # # . . #
+        . . # . #
+        # . # . #
+        `)
+    basic.showNumber(8)
+    basic.showLeds(`
+        . . . . .
+        . . . . .
+        . . . . .
+        . . . . .
+        # . . . .
+        `)
+    basic.showLeds(`
+        . . . . .
+        . . . . .
+        . . . . .
+        # # . . .
+        # # . . .
+        `)
+    basic.showLeds(`
+        . . . . .
+        . . . . .
+        # # . . .
+        . . # . .
+        # . # . .
+        `)
+    basic.showLeds(`
+        . . . . .
+        # # # . .
+        # # # # .
+        . . # # .
+        # . # # .
+        `)
+    basic.showLeds(`
+        # # # . .
+        . . . # .
+        # # . . #
+        . . # . #
+        # . # . #
+        `)
+    basic.clearScreen()
+  }
  
   // *************************************************** [GROUP] Datagram ****************************************** //
   /**
