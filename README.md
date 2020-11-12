@@ -10,6 +10,7 @@ Kit usually includes 5mm IR LED for construction of your own transmiter.
 | ![IR Receiver VS1838B HX1838](https://github.com/BrickHackers/pxt-IR-VS1838/raw/master/irReceiverUnsoldered.png "IR receiver (unsoldered version)") | ![IR Receiver VS1838B HX1838](https://github.com/BrickHackers/pxt-IR-VS1838/raw/master/irReceiverSoldered.png "IR receiver (soldered version)") |
 | :-------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: | 
 |                                                        _unsoldered components_                                                                      |                                                                    _soldered board_                                                             |
+
 IR receiver chip is focused to use with Arduino and Raspberry Pi, however, works with micor:bit and calliope too.
 According to VS1838B datasheet, it features:
 * **[ frequency ]**  38 kHz
