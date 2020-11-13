@@ -213,23 +213,9 @@ namespace irVS1838 {
     basic.showLeds(`
         . . . . .
         . . . . .
-        . . . . .
-        # # . . .
-        # # . . .
-        `)
-    basic.showLeds(`
-        . . . . .
-        . . . . .
         # # . . .
         . . # . .
         # . # . .
-        `)
-    basic.showLeds(`
-        . . . . .
-        # # # . .
-        # # # # .
-        . . # # .
-        # . # # .
         `)
     basic.showLeds(`
         # # # . .
@@ -240,18 +226,11 @@ namespace irVS1838 {
         `)
     basic.showNumber(8)
     basic.showLeds(`
-        . . . . .
-        . . . . .
-        . . . . .
-        . . . . .
-        # . . . .
-        `)
-    basic.showLeds(`
-        . . . . .
-        . . . . .
-        . . . . .
-        # # . . .
-        # # . . .
+        # # # . .
+        . . . # .
+        # # . . #
+        . . # . #
+        # . # . #
         `)
     basic.showLeds(`
         . . . . .
@@ -262,18 +241,12 @@ namespace irVS1838 {
         `)
     basic.showLeds(`
         . . . . .
-        # # # . .
-        # # # # .
-        . . # # .
-        # . # # .
+        . . . . .
+        . . . . .
+        . . . . .
+        # . . . .
         `)
-    basic.showLeds(`
-        # # # . .
-        . . . # .
-        # # . . #
-        . . # . #
-        # . # . #
-        `)
+
     basic.clearScreen()
   }
  
