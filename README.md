@@ -52,6 +52,19 @@ irVS1838.connectIrReceiver(DigitalPin.P0)
 
 - `pin` - digital pin with an attached IR receiver
 
+## irVS1838.connectIrReceiverVisual
+
+Connects to the IR receiver module at the specified pin. Display it on LED matrix.
+[ NOTE ] Display animation take some time. This function was added for log pin during testing.
+
+```sig
+irVS1838.connectIrReceiverVisual(DigitalPin.P0)
+```
+
+### Parameters
+
+- `pin` - digital pin with an attached IR receiver
+
 ## irVS1838.onIrButton
 
 Do something when a specific button is pressed or released on the remote control.
