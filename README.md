@@ -1,5 +1,5 @@
 # IR Remote Receiver Module and Controller Kit
-![Build status badge](https://github.com/BrickHackers/pxt-IR-VS1838/workflows/MakeCode/badge.svg)
+[![Build Status](https://travis-ci.org/microbit-mark/pxt-IR-VS1838.svg?branch=master)](https://travis-ci.org/microbit-mark/pxt-IR-VS1838)
 based on [MakerBit IR Receiver](https://github.com/1010Technologies/pxt-makerbit-ir-receiver) by [1010Technologies](https://github.com/1010Technologies)
 
 MakeCode extension for set of IR receiver VS1838B HX1838 and Mini Slim controller (product name can vary depending on the seller - see pictures bellow).
